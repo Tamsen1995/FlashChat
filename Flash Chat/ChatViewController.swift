@@ -8,7 +8,7 @@ import Firebase
 
 class ChatViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate {
     
-    
+    var messageArray : [Message] = [Message]()
     
     @IBOutlet var heightConstraint: NSLayoutConstraint!
     @IBOutlet var sendButton: UIButton!
@@ -30,6 +30,7 @@ class ChatViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         messageTableView.register(UINib(nibName: "MessageCell", bundle: nil), forCellReuseIdentifier: "customMessageCell")
         configureTableView()
+        retrieveMessages()
         
     }
     
@@ -125,7 +126,20 @@ class ChatViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     //TODO: Create the retrieveMessages method here:
     
-    
+    func retrieveMessages () {
+        let messageDB = Database.database().reference().child("Messages")
+        messageDB.observe(.childAdded) { (snapshot) in
+            let snapshotValue = snapshot.value as! Dictionary<String, String>
+            let text = snapshotValue["MessageBody"]!
+            let sender = snapshotValue["Sender"]!
+            
+            let message = Message()
+            message.messageBody = text
+            message.sender = sender
+            self.messageArray.append(message)
+            
+        }
+    }
     
     
     
