@@ -5,6 +5,7 @@
 
 import UIKit
 import Firebase
+import ChameleonFramework
 
 class ChatViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate {
     
@@ -14,8 +15,6 @@ class ChatViewController: UIViewController, UITableViewDelegate, UITableViewData
     @IBOutlet var sendButton: UIButton!
     @IBOutlet var messageTextfield: UITextField!
     @IBOutlet var messageTableView: UITableView!
-    
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,6 +31,8 @@ class ChatViewController: UIViewController, UITableViewDelegate, UITableViewData
         configureTableView()
         retrieveMessages()
         
+        messageTableView.separatorStyle = .none
+        
     }
     
     ///////////////////////////////////////////
@@ -45,6 +46,15 @@ class ChatViewController: UIViewController, UITableViewDelegate, UITableViewData
         cell.messageBody.text = messageArray[indexPath.row].messageBody
         cell.senderUsername.text = messageArray[indexPath.row].sender
         cell.avatarImageView.image = UIImage(named: "egg")
+        
+        if cell.senderUsername.text == Auth.auth().currentUser?.email as String! {
+            // Mesages we sent
+            cell.avatarImageView.backgroundColor = UIColor.flatMint()
+            cell.messageBackground.backgroundColor = UIColor.flatSkyBlue()
+        } else {
+            cell.avatarImageView.backgroundColor = UIColor.flatWatermelon()
+            cell.messageBackground.backgroundColor = UIColor.flatRedColorDark()
+        }
         
         return cell
         
@@ -61,7 +71,6 @@ class ChatViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     
-    //TODO: Declare configureTableView here:
     
     func configureTableView() {
         messageTableView.rowHeight = UITableViewAutomaticDimension
@@ -71,22 +80,14 @@ class ChatViewController: UIViewController, UITableViewDelegate, UITableViewData
     ///////////////////////////////////////////
     
     //MARK:- TextField Delegate Methods
-    
-    
-    
-    
-    //TODO: Declare textFieldDidBeginEditing here:
-    
+
     func textFieldDidBeginEditing(_ textField: UITextField) {
         UIView.animate(withDuration: 0.5) {
             self.heightConstraint.constant = 308
             self.view.layoutIfNeeded()
         }
     }
-    
-    
-    //TODO: Declare textFieldDidEndEditing here:
-    
+
     func textFieldDidEndEditing(_ textField: UITextField) {
         UIView.animate(withDuration: 0.5) {
             self.heightConstraint.constant = 50
@@ -96,13 +97,8 @@ class ChatViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     ///////////////////////////////////////////
     
-    
     //MARK: - Send & Recieve from Firebase
-    
-    
-    
-    
-    
+
     @IBAction func sendPressed(_ sender: AnyObject) {
         
         messageTextfield.endEditing(true)
@@ -126,7 +122,6 @@ class ChatViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
     
-    //TODO: Create the retrieveMessages method here:
     
     func retrieveMessages () {
         let messageDB = Database.database().reference().child("Messages")
@@ -147,9 +142,7 @@ class ChatViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
     
-    
-    
-    
+  
     @IBAction func logOutPressed(_ sender: AnyObject) {
         
         do {
